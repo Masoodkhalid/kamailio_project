@@ -1,0 +1,20 @@
+# Byte-compiled files
+*.pyc
+*.pyo
+__pycache__/
+
+# Environment
+.env
+venv/
+*.sqlite3
+
+# Static files
+staticfiles/
+
+# Logs
+*.log
+
+# Django migrations
+*/migrations/*
+!*/migrations/__init__.py
+

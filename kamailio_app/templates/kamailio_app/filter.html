@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trusted Table Management</title>
+    <!-- Bootstrap CSS -->
+    <link 
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" 
+        rel="stylesheet"
+    >
+</head>
+<body>
+    <div class="container mt-5">
+        <!-- Header -->
+        <div class="text-center mb-4">
+            <h1>Trusted Table Management</h1>
+            <p>Filter and insert trusted entries into the table.</p>
+        </div>
+
+        <!-- Insert Form -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                Add New Trusted Entry
+            </div>
+            <div class="card-body">
+                <form method="post" action="">
+                    {% csrf_token %}
+                    <div class="row">
+                        {% for field in form %}
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.errors %}
+                                    <div class="text-danger">{{ field.errors }}</div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-success">Add Entry</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Filter Dropdown -->
+        <form method="get" action="" class="mb-4 text-center">
+            <label for="tag" class="form-label">Filter by Tag:</label>
+            <select name="tag" id="tag" class="form-select w-auto d-inline-block" onchange="this.form.submit()">
+                <option value="">-- Show All Tags --</option>
+                {% for tag in tags %}
+                    <option value="{{ tag }}" {% if tag == selected_tag %}selected{% endif %}>
+                        {{ tag }}
+                    </option>
+                {% endfor %}
+            </select>
+        </form>
+
+        <!-- Table Display -->
+        <div class="table-responsive">
+            <table class="table table-striped table-hover table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Source IP</th>
+                        <th>Protocol</th>
+                        <th>From Pattern</th>
+                        <th>RURI Pattern</th>
+                        <th>Tag</th>
+                        <th>Priority</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in entries %}
+                        <tr>
+                            <td>{{ entry.id }}</td>
+                            <td>{{ entry.src_ip }}</td>
+                            <td>{{ entry.proto }}</td>
+                            <td>{{ entry.from_pattern|default:"-" }}</td>
+                            <td>{{ entry.ruri_pattern|default:"-" }}</td>
+                            <td>{{ entry.tag|default:"-" }}</td>
+                            <td>{{ entry.priority }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted">
+                                No data available for the selected tag.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script 
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+    ></script>
+</body>
+</html>

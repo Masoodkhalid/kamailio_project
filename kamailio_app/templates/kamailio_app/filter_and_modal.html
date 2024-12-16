@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trusted Table Management</title>
+    <!-- Bootstrap CSS -->
+    <link 
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" 
+        rel="stylesheet"
+    >
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Trusted Table Management</h1>
+
+        <!-- Insert Form -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">Add New Trusted Entry</div>
+            <div class="card-body">
+                <form method="post" action="">
+                    {% csrf_token %}
+                    <input type="hidden" name="insert" value="1">
+                    <div class="row">
+                        {% for field in form %}
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                                {{ field }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-success">Add Entry</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Table Display -->
+        <table class="table table-striped table-hover table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Source IP</th>
+                    <th>Protocol</th>
+                    <th>From Pattern</th>
+                    <th>RURI Pattern</th>
+                    <th>Tag</th>
+                    <th>Priority</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in entries %}
+                <tr>
+                    <td>{{ entry.id }}</td>
+                    <td>{{ entry.src_ip }}</td>
+                    <td>{{ entry.proto }}</td>
+                    <td>{{ entry.from_pattern|default:"-" }}</td>
+                    <td>{{ entry.ruri_pattern|default:"-" }}</td>
+                    <td>{{ entry.tag|default:"-" }}</td>
+                    <td>{{ entry.priority }}</td>
+                    <td>
+                        <!-- Update Button -->
+                        <button 
+                            class="btn btn-sm btn-warning" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#updateModal{{ entry.id }}">
+                            Update
+                        </button>
+                        <!-- Delete Button -->
+                        <a href="?delete_id={{ entry.id }}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?');">Delete</a>
+                    </td>
+                </tr>
+
+                <!-- Update Modal -->
+                <div class="modal fade" id="updateModal{{ entry.id }}" tabindex="-1" aria-labelledby="updateModalLabel{{ entry.id }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-warning text-dark">
+                                <h5 class="modal-title" id="updateModalLabel{{ entry.id }}">Update Trusted Entry</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form method="post" action="">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="update_id" value="{{ entry.id }}">
+                                    <div class="mb-3">
+                                        <label for="src_ip_{{ entry.id }}" class="form-label">Source IP</label>
+                                        <input type="text" id="src_ip_{{ entry.id }}" name="src_ip" class="form-control" value="{{ entry.src_ip }}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="proto_{{ entry.id }}" class="form-label">Protocol</label>
+                                        <input type="text" id="proto_{{ entry.id }}" name="proto" class="form-control" value="{{ entry.proto }}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="from_pattern_{{ entry.id }}" class="form-label">From Pattern</label>
+                                        <input type="text" id="from_pattern_{{ entry.id }}" name="from_pattern" class="form-control" value="{{ entry.from_pattern }}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="ruri_pattern_{{ entry.id }}" class="form-label">RURI Pattern</label>
+                                        <input type="text" id="ruri_pattern_{{ entry.id }}" name="ruri_pattern" class="form-control" value="{{ entry.ruri_pattern }}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="tag_{{ entry.id }}" class="form-label">Tag</label>
+                                        <input type="text" id="tag_{{ entry.id }}" name="tag" class="form-control" value="{{ entry.tag }}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="priority_{{ entry.id }}" class="form-label">Priority</label>
+                                        <input type="number" id="priority_{{ entry.id }}" name="priority" class="form-control" value="{{ entry.priority }}">
+                                    </div>
+                                    <div class="text-center">
+                                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script 
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+    ></script>
+</body>
+</html>
